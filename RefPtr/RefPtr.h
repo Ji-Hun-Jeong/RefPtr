@@ -34,6 +34,8 @@ private:
 template <typename T>
 class RefPtr
 {
+	template <typename U> 
+	friend class RefPtr;
 public:
 	RefPtr()
 		: ReferenceTable(nullptr)
@@ -42,6 +44,13 @@ public:
 		: ReferenceTable(new RefTable<T>(_RefObject))
 	{
 		ReferenceTable->Refer();
+	}
+	template <typename U>
+	RefPtr(const RefPtr<U>& _Other)
+		: ReferenceTable(reinterpret_cast<RefTable<T>*>(_Other.ReferenceTable))
+	{
+		if (ReferenceTable)
+			ReferenceTable->Refer();
 	}
 	RefPtr(const RefPtr& _Other);
 	RefPtr(RefPtr&& _Other) noexcept;
