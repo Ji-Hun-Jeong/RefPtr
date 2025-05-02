@@ -127,9 +127,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="RefCounter.cpp" />
     <ClCompile Include="RefPtr.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="RefCounter.h" />
     <ClInclude Include="RefPtr.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

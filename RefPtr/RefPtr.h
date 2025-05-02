@@ -34,11 +34,14 @@ private:
 template <typename T>
 class RefPtr
 {
-	template <typename U> 
+	template <typename U>
 	friend class RefPtr;
 public:
 	RefPtr()
 		: ReferenceTable(nullptr)
+	{}
+	RefPtr(std::nullptr_t _NullPtr)
+		: RefPtr()
 	{}
 	explicit RefPtr(T* _RefObject)
 		: ReferenceTable(new RefTable<T>(_RefObject))
@@ -62,7 +65,7 @@ public:
 public:
 	void Reset()
 	{
-		delete ReferenceTable; 
+		delete ReferenceTable;
 		ReferenceTable = nullptr;
 	}
 
@@ -79,7 +82,7 @@ private:
 template <typename T, typename... Args>
 RefPtr<T> MakeRef(Args&&... args)
 {
-	return RefPtr<T>(new T(args)...);
+	return RefPtr<T>(new T(std::forward<Args>(args)...));
 }
 
 template <typename T>
@@ -106,6 +109,8 @@ RefPtr<T>::~RefPtr()
 template <typename T>
 RefPtr<T>& RefPtr<T>::operator=(const RefPtr& _Other)
 {
+	if (this == &_Other)
+		return *this;
 	_Other.ReferenceTable->Refer();
 	if (ReferenceTable)
 		ReferenceTable->Release();
@@ -116,7 +121,7 @@ RefPtr<T>& RefPtr<T>::operator=(const RefPtr& _Other)
 template <typename T>
 RefPtr<T>& RefPtr<T>::operator=(RefPtr&& _Other) noexcept
 {
-	if (ReferenceTable == _Other.ReferenceTable)
+	if (this == &_Other)
 		return *this;
 
 	if (ReferenceTable)					// 내 테이블이 있으면 소유권 없애기
